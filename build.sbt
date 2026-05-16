@@ -210,6 +210,18 @@ lazy val example = project
     name := "zio-streams-compress-example"
   )
 
+lazy val benchmarks = project
+  .in(file("benchmarks"))
+  .dependsOn(lz4)
+  .enablePlugins(JmhPlugin)
+  .settings(
+    name := "zio-streams-compress-benchmarks",
+    scalaVersion := _scala213,
+    crossScalaVersions := List(_scala213),
+    publish / skip := true,
+    publishArtifact := false,
+  )
+
 lazy val docs = project
   .in(file("docs-project"))
   .dependsOn(core)

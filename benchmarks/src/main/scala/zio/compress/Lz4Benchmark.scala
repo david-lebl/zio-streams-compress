@@ -20,6 +20,9 @@ class Lz4Benchmark {
   @Param(Array("compressible", "random"))
   var dataType: String = _
 
+  @Param(Array("4096", "65536", "262144"))
+  var chunkSize: Int = _
+
   private var inputData: Chunk[Byte]      = _
   private var compressedData: Chunk[Byte] = _
   private val runtime: Runtime[Any]       = Runtime.default
@@ -48,7 +51,7 @@ class Lz4Benchmark {
 
   @Benchmark
   def decompress(): Chunk[Byte] =
-    runZIO(ZStream.fromChunk(compressedData).via(Lz4Decompressor.decompress).runCollect)
+    runZIO(ZStream.fromChunk(compressedData).via(Lz4Decompressor(chunkSize).decompress).runCollect)
 
   @Benchmark
   def roundTrip(): Chunk[Byte] =
@@ -56,7 +59,7 @@ class Lz4Benchmark {
       ZStream
         .fromChunk(inputData)
         .via(Lz4Compressor.compress)
-        .via(Lz4Decompressor.decompress)
+        .via(Lz4Decompressor(chunkSize).decompress)
         .runCollect
     )
 
